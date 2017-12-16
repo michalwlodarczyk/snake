@@ -1,79 +1,13 @@
 const astar = require('./astar.js');
 const Graph = require('./graph.js').Graph;
 
-const INIT = {
-  type: ['snake'][0],
-  start: {
-    x: 0,
-    y: 0,
-    length: 3,
-    direction: ['N', 'E', 'S', 'W'][0],
-  },
-  timeout: 200,
-  board: {
-    width: 4,
-    height: 4,
-  },
-  players: [1, 2, 3],
-  you: 3,
-};
-
-const STATE = {
-  'board': [
-    [
-      undefined, // empty,
-      undefined, // empty,
-      undefined,
-      {
-        dead: true,
-      },
-      {
-        player: 2,
-      }
-    ],
-    [
-      {
-        dead: true,
-      },
-      {
-        player: 3,
-        head: 'N',
-      },
-      undefined,
-      {
-        player: 2,
-      },
-      {
-        player: 3,
-      }
-    ],
-    [
-      '🍎', // apple
-      undefined, // empty,
-      {
-        dead: true,
-      },
-      {
-        player: 2,
-      },
-      {
-        player: 3,
-      }
-    ]
-  ]
-};
-
 class Snake {
-  constructor(game = INIT) {
+  constructor(game) {
     this.game = game;
-
-    // TODO: wywalić, tylko do testów
-    this.getMove();
   }
 
   findPath(board, from, to) {
     const graph = new Graph(board);
-    console.log(graph.toString());
     return astar.search(graph.nodes, graph.nodes[from.y][from.x], graph.nodes[to.y][to.x]);
   }
 
@@ -213,7 +147,7 @@ class Snake {
     }
   }
 
-  getMove(state = STATE) {
+  getMove(state) {
     this.state = state;
     const boardArray = this.getBoardArray(state.board);
     const headPos = this.getSnakeHead(state.board);
@@ -221,17 +155,10 @@ class Snake {
     const applePos = this.getApple(state.board);
 
     const path = this.findPath(boardArray, headPos, applePos);
-    console.log(path.toString());
     const nextStep = { y: path[0].x, x: path[0].y };
 
-    console.log(headPos, nextStep, snakeDir);
-    const move = this.moveTo(headPos, nextStep, snakeDir);
-    console.log(move);
-
-    return move;
+    return this.moveTo(headPos, nextStep, snakeDir);
   }
 }
-
-new Snake();
 
 module.exports = Snake;
